@@ -1,0 +1,5 @@
+size,algorithm,time_seconds,gflops
+32,naive,0.000018,3.644939
+32,goto,0.000017,3.781869
+64,naive,0.000176,2.982349
+64,goto,0.000173,3.024849

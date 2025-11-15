@@ -16,4 +16,8 @@ elseif(MSVC)
     add_compile_options(/O2 /DNDEBUG)
 endif()
 
-add_executable(fast_mat_mult main.cpp)
+add_executable(fast_mat_mult
+    main.cpp
+    src/naive_matmul.cpp
+    src/goto_matmul.cpp
+)

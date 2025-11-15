@@ -13,8 +13,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "csv",
         nargs="?",
-        default="gflops_data.csv",
-        help="CSV file produced by fast_mat_mult (default: gflops_data.csv)",
+        default="baseline_naive.csv",
+        help="CSV file produced by fast_mat_mult (default: baseline_naive.csv)",
     )
     parser.add_argument(
         "--title",
@@ -34,12 +34,19 @@ def main() -> None:
     if data.empty:
         raise SystemExit("CSV file is empty")
 
+    if "algorithm" not in data.columns:
+        data["algorithm"] = "unknown"
+
     plt.figure(figsize=(8, 5))
-    plt.plot(data["size"], data["gflops"], marker="o")
+    for algorithm, group in data.groupby("algorithm"):
+        sorted_group = group.sort_values("size")
+        plt.plot(sorted_group["size"], sorted_group["gflops"], marker="o", label=algorithm)
     plt.title(args.title)
     plt.xlabel("Matrix size (N x N)")
     plt.ylabel("GFLOP/s")
     plt.grid(True, linestyle="--", alpha=0.6)
+    if data["algorithm"].nunique() > 1 or data["algorithm"].iloc[0] != "unknown":
+        plt.legend()
     plt.tight_layout()
     plt.show()
 
