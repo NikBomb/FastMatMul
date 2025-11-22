@@ -10,4 +10,4 @@ struct BlockParams {
     int nr = 4;
 };
 
-void goto_matmul(const double* A, const double* B, double* C, int m, int n, int k, const BlockParams& params);
+void goto_matmul(const double* A, const double* B, double* C, int m, int n, int k, int ldA, int ldB, int ldC, const BlockParams& params);

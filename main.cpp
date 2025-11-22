@@ -163,7 +163,7 @@ RunResult benchmark_size(int n, int repetitions, const std::vector<double>& A, c
         if (algorithm == AlgorithmKind::Naive) {
             naive_matmul(A.data(), B.data(), C.data(), n, n ,n ,n,n,n);
         } else {
-            goto_matmul(A.data(), B.data(), C.data(), n, n, n,  block_params);
+            goto_matmul(A.data(), B.data(), C.data(), n, n, n,  n, n ,n ,block_params);
         }
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end - start;
@@ -195,7 +195,7 @@ bool verify_algorithms(int n, const std::vector<double>& A, const std::vector<do
     std::vector<double> C_goto(total_elements);
 
     naive_matmul(A.data(), B.data(), C_naive.data(), n, n, n, n, n, n);
-    goto_matmul(A.data(), B.data(), C_goto.data(), n, n, n, params);
+    goto_matmul(A.data(), B.data(), C_goto.data(), n, n, n, n, n, n,params);
 
     const double epsilon = 1e-9;
     for (std::size_t idx = 0; idx < total_elements; ++idx) {
