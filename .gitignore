@@ -2,3 +2,5 @@ build/
 .venv/
 fast_mat_mult
 *.o
+.cache/
+.vscode/

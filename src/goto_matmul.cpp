@@ -2,8 +2,11 @@
 
 #include "naive_matmul.h"
 
-void goto_matmul(const double* A, const double* B, double* C, int n, const BlockParams& params) {
-    (void)params;
+void goto_matmul(const double* A, const double* B, double* C, int m, int n, int k, const BlockParams& params) {
     // Placeholder implementation until cache-blocked kernel is ready.
-    naive_matmul(A, B, C, n);
+    
+    const int num_subblocks = n / params.nc;
+    for (int jblock = 0 ; jblock < num_subblocks; ++jblock) {
+        naive_matmul(A, &B[params.nc *jblock], &C[params.nc * jblock], m, n, k, m, params.nc, k);
+    }
 }

@@ -30,7 +30,7 @@ enum class AlgorithmMode {
 struct Config {
     std::string output_file = "gflops_data.csv";
     int repetitions = 3;
-    std::vector<int> sizes = {64, 128, 256, 384, 512};
+    std::vector<int> sizes = {32, 64, 128, 256, 512};
     unsigned seed = std::random_device{}();
     AlgorithmMode algorithm_mode = AlgorithmMode::Naive;
     bool verify = false;
@@ -153,16 +153,17 @@ void fill_random(std::vector<double>& matrix, std::mt19937& rng) {
 RunResult benchmark_size(int n, int repetitions, const std::vector<double>& A, const std::vector<double>& B,
                          AlgorithmKind algorithm, const BlockParams& block_params) {
     const std::size_t total_elements = static_cast<std::size_t>(n) * static_cast<std::size_t>(n);
-    std::vector<double> C(total_elements);
-
+    // Initialize C with zeros, total_elements
+    std::vector<double> C(total_elements, 0.0);
+    
     double best_seconds = std::numeric_limits<double>::max();
 
     for (int rep = 0; rep < repetitions; ++rep) {
         auto start = std::chrono::high_resolution_clock::now();
         if (algorithm == AlgorithmKind::Naive) {
-            naive_matmul(A.data(), B.data(), C.data(), n);
+            naive_matmul(A.data(), B.data(), C.data(), n, n ,n ,n,n,n);
         } else {
-            goto_matmul(A.data(), B.data(), C.data(), n, block_params);
+            goto_matmul(A.data(), B.data(), C.data(), n, n, n,  block_params);
         }
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end - start;
@@ -193,8 +194,8 @@ bool verify_algorithms(int n, const std::vector<double>& A, const std::vector<do
     std::vector<double> C_naive(total_elements);
     std::vector<double> C_goto(total_elements);
 
-    naive_matmul(A.data(), B.data(), C_naive.data(), n);
-    goto_matmul(A.data(), B.data(), C_goto.data(), n, params);
+    naive_matmul(A.data(), B.data(), C_naive.data(), n, n, n, n, n, n);
+    goto_matmul(A.data(), B.data(), C_goto.data(), n, n, n, params);
 
     const double epsilon = 1e-9;
     for (std::size_t idx = 0; idx < total_elements; ++idx) {
