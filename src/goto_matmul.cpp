@@ -4,11 +4,30 @@
 #include <algorithm>
 
 
+
+void Loop1(const double* A, const double* B, double* C, int m, int n, int k, int ldA, int ldB, int ldC, const BlockParams& params) {
+    const int mr = std::min(m, params.mr);
+    const int num_row_block = m / mr;
+    for (int iblock = 0; iblock < num_row_block; iblock++) {
+        naive_matmul(&A[mr * iblock * ldA], B, &C[mr * iblock * ldC], mr, n, k, ldA, ldB, ldC);
+    }
+}
+
+
+void Loop2(const double* A, const double* B, double* C, int m, int n, int k, int ldA, int ldB, int ldC, const BlockParams& params) {
+    const int nr = std::min(n, params.nr);
+    const int num_col_block = n / nr;
+    for (int jblock = 0; jblock < num_col_block; jblock++) {
+        Loop1(A, &B[nr * jblock], &C[nr * jblock], m, nr, k, ldA, ldB, ldC, params);
+    }
+}
+
 void Loop3(const double* A, const double* B, double* C, int m, int n, int k, int ldA, int ldB, int ldC, const BlockParams& params) {
     const int mc = std::min(m, params.mc);
     const int num_row_block = m / mc;
     for (int iblock = 0; iblock < num_row_block; iblock++) {
-        naive_matmul(&A[mc * iblock * ldA], B, &C[mc * iblock * ldC], mc, n, k, ldA, ldB, ldC);
+        //naive_matmul(&A[mc * iblock * ldA], B, &C[mc * iblock * ldC], mc, n, k, ldA, ldB, ldC);
+        Loop2(&A[mc * iblock * ldA], B, &C[mc * iblock * ldC], mc, n, k, ldA, ldB, ldC, params);
     }
 }
 
