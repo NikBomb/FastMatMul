@@ -6,7 +6,7 @@ struct BlockParams {
     int mc = 256;
     int kc = 256;
     int nc = 16;
-    int mr = 8;
+    int mr = 4;
     int nr = 4;
 };
 
