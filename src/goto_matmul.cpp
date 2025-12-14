@@ -3,6 +3,7 @@
 #include "naive_matmul.h"
 #include <algorithm>
 #include <immintrin.h>
+#include <vector>
 
 
 void kernel_col(const double* A, const double* B, double* C, int m, int n, int k, int ldA, int ldB, int ldC){
@@ -138,11 +139,24 @@ void Loop3(const double* A, const double* B, double* C, int m, int n, int k, int
     }
 }
 
+void pack_B_panel(const double* B, int ldB, int kc, int nc, std::vector<double>& packed) {
+    packed.resize(static_cast<std::size_t>(kc) * static_cast<std::size_t>(nc));
+    for (int p = 0; p < kc; ++p) {
+        const double* src = B + p * ldB;
+        double* dst = packed.data() + static_cast<std::size_t>(p) * static_cast<std::size_t>(nc);
+        std::copy(src, src + nc, dst);
+    }
+}
+
 void Loop4(const double* A, const double* B, double* C, int m, int n, int k, int ldA, int ldB, int ldC, const BlockParams& params) {
 	const int kc= std::min(k, params.kc);
     const int num_depth_block = k / kc;
+    std::vector<double> packed_B;
 	for (int kblock = 0; kblock < num_depth_block; kblock++) {
-	    Loop3(&A[kblock * kc], &B[kc * kblock * ldB], C,  m, n, kc, ldA, ldB, ldC, params);
+        const double* B_panel = &B[kc * kblock * ldB];
+        pack_B_panel(B_panel, ldB, kc, n, packed_B);
+        const int packed_ldB = n;
+	    Loop3(&A[kblock * kc], packed_B.data(), C,  m, n, kc, ldA, packed_ldB, ldC, params);
 	}	
 }
 
